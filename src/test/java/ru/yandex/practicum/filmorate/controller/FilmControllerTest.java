@@ -13,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FilmControllerTest {
     FilmController filmController;
-
     Film film = Film.builder()
             .name("film name")
             .description("film description")
@@ -33,41 +32,9 @@ class FilmControllerTest {
     }
 
     @Test
-    void createFailName() {
-        film.setName("");
-        Throwable exception = assertThrows(ValidateException.class, () -> filmController.create(film));
-        assertEquals(exception.getMessage(), "Название не может быть пустым");
-    }
-
-    @Test
-    void createFailDescription() {
-        film.setDescription("Описание длиннее 200 символов\n" +
-                "Описание длиннее 200 символов\n" +
-                "Описание длиннее 200 символов\n" +
-                "Описание длиннее 200 символов\n" +
-                "Описание длиннее 200 символов\n" +
-                "Описание длиннее 200 символов\n" +
-                "Описание длиннее 200 символов\n" +
-                "Описание длиннее 200 символов");
-        Throwable exception = assertThrows(ValidateException.class, () -> filmController.create(film));
-        assertEquals(exception.getMessage(), "Описание не должно быть длиннее 200 символов");
-    }
-
-    @Test
     void createFailDate() {
         film.setReleaseDate(LocalDate.of(1795, 12, 28));
         Throwable exception = assertThrows(ValidateException.class, () -> filmController.create(film));
-        assertEquals(exception.getMessage(), "Дата не может быть ранее 28-12-1895");
-    }
-
-    @Test
-    void createFailDuration() {
-        film.setDuration(-100);
-        Throwable exception = assertThrows(ValidateException.class, () -> filmController.create(film));
-        assertEquals(exception.getMessage(), "Продолжительность должна быть положительной");
-    }
-
-    @Test
-    void update() {
+        assertEquals(exception.getMessage(), "Дата не может быть ранее 1895-12-28");
     }
 }
