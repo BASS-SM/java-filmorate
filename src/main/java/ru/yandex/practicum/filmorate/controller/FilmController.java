@@ -1,55 +1,73 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static ru.yandex.practicum.filmorate.constant.FilmConstant.RELEASE_DATE;
+import static ru.yandex.practicum.filmorate.constant.FilmConstant.DEFAULT_VALUE_COUNT;
 
 @Slf4j
 @RestController
 @RequestMapping("/films")
+@RequiredArgsConstructor
 public class FilmController {
-    private Integer id = 1;
-    private final Map<Integer, Film> films = new HashMap<>();
+    private final FilmService filmService;
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Film findById(@PathVariable Long id) {
+        log.info("получен запрос получения фильма по ID: {}", id);
+        Film film1 = filmService.getFilmByID(id);
+        log.info("получен фильм: {}", film1);
+        return film1;
+    }
 
     @GetMapping
-    public ResponseEntity<List<Film>> findAll() {
-        return ResponseEntity.ok().body(new ArrayList<>(films.values()));
+    @ResponseStatus(HttpStatus.OK)
+    public List<Film> findAll() {
+        log.info("получен запрос получения списка всех фильмов.");
+        List<Film> allFilms = filmService.getAllFilms();
+        log.info("получен список всех фильмов, кол-во: {}", allFilms.size());
+        return allFilms;
     }
 
     @PostMapping
-    public ResponseEntity<Film> create(@Valid @RequestBody Film film) {
-        if (film.getReleaseDate().isBefore(RELEASE_DATE)) {
-            throw new ValidateException("Дата не может быть ранее " + RELEASE_DATE, BAD_REQUEST);
-        }
-        film.setId(id++);
-        films.put(film.getId(), film);
+    @ResponseStatus(HttpStatus.CREATED)
+    public Film createFilm(@Valid @RequestBody Film film) {
+        log.info("получен запрос создания фильма: {}", film.getName());
+        filmService.createFilm(film);
         log.info("Фильм добавлен");
-        return ResponseEntity.ok(film);
+        return film;
     }
 
     @PutMapping
-    public ResponseEntity<Film> update(@Valid @RequestBody Film film) {
-        if (films.containsKey(film.getId())) {
-            if (film.getReleaseDate().isBefore(RELEASE_DATE)) {
-                throw new ValidateException("Дата не может быть ранее " + RELEASE_DATE, BAD_REQUEST);
-            }
-            films.put(film.getId(), film);
-            log.info("Фильм обновлен {}.", film.getName());
-            return ResponseEntity.ok(film);
-        } else {
-            log.error("Фильм не обновлен (Не найден)");
-            return ResponseEntity.status(404).body(film);
-        }
+    @ResponseStatus(HttpStatus.OK)
+    public Film updateFilm(@Valid @RequestBody Film film) {
+        log.info("получен запрос обновления фильма: {}", film.getName());
+        filmService.updateFilm(film);
+        log.info("Фильм обновлен");
+        return film;
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(@PathVariable Long id, @PathVariable Long userId) {
+        filmService.addLike(id, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteLike(@PathVariable Long id, @PathVariable Long userId) {
+        filmService.deleteLike(id, userId);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = DEFAULT_VALUE_COUNT) String count) {
+        return filmService.getPopularFilms(count);
     }
 }
