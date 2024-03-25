@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.dao;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -12,13 +10,10 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import javax.validation.constraints.Null;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 @Repository
@@ -69,7 +64,7 @@ public class UserDbStorage implements UserStorage {
         }, keyHolder);
 
         user.setId(keyHolder.getKey().longValue());
-       return user;
+        return user;
 
 //
 //        if (user.getName() == null || user.getName().isBlank()) {
@@ -96,8 +91,7 @@ public class UserDbStorage implements UserStorage {
                 , user.getId());
         if (update > 0) {
             return user;
-        }
-        else throw new NotFoundException("Пользователь не обновлен", HttpStatus.NOT_FOUND);
+        } else throw new NotFoundException("Пользователь не обновлен", HttpStatus.NOT_FOUND);
     }
 
     @Override
@@ -120,7 +114,7 @@ public class UserDbStorage implements UserStorage {
     public boolean deleteFriend(Long id, Long friendId) {
         String sqlString = "DELETE FROM FRIENDSHIP WHERE USER_ID = ? AND FRIEND_ID = ?";
         jdbcTemplate.update(sqlString, id, friendId);
-            return true;
+        return true;
 
     }
 

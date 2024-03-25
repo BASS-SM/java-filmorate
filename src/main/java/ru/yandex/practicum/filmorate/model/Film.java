@@ -8,12 +8,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 import static ru.yandex.practicum.filmorate.constant.FilmConstant.FILM_RELEASE_DATE;
-import static ru.yandex.practicum.filmorate.constant.FilmConstant.RELEASE_DATE;
 
 @Data
 @Builder
@@ -32,5 +29,4 @@ public class Film {
 
     private Set<Genre> genres;
     private MPA mpa;
-
 }
