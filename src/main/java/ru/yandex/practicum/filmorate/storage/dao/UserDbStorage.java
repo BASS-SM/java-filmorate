@@ -20,20 +20,12 @@ import java.util.List;
 @RequiredArgsConstructor
 
 public class UserDbStorage implements UserStorage {
-    //private HashMap<Long, User> users = new HashMap<>();
     private final JdbcTemplate jdbcTemplate;
 
     @Override
     public User findByID(Long id) {
         String sqlQuery = "SELECT * FROM USERS WHERE id = ?";
         List<User> result = jdbcTemplate.query(sqlQuery, this::mapRowToUser, id);
-
-        //  return users.stream().findFirst();
-//        User result = jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, id);
-//        if (result == null){
-//            throw new NotFoundException("Пользователь не найден", HttpStatus.NOT_FOUND);
-//        }else
-//        return  result;
         if (result.size() != 1) {
             throw new NotFoundException("Пользователь не найден", HttpStatus.NOT_FOUND);
         } else
@@ -44,7 +36,6 @@ public class UserDbStorage implements UserStorage {
     @Override
     public List<User> findAll() {
         String sqlQuery = "select * from USERS";
-        //String sqlQuery = "select USER_ID, EMAIL, LOGIN, NAME, BIRTHDAY from USERS";
         return jdbcTemplate.query(sqlQuery, this::mapRowToUser);
     }
 
@@ -62,20 +53,8 @@ public class UserDbStorage implements UserStorage {
             stmt.setDate(4, Date.valueOf(user.getBirthday()));
             return stmt;
         }, keyHolder);
-
         user.setId(keyHolder.getKey().longValue());
         return user;
-
-//
-//        if (user.getName() == null || user.getName().isBlank()) {
-//            user.setName(user.getLogin());
-//        }
-//        if (user.getListFriends() == null) {
-//            user.getListFriends();
-//        }
-//        user.setId(user.getId()+1);
-//        users.put(user.getId(), user);
-//        return user;
     }
 
     @Override
