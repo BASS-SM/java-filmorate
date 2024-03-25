@@ -1,0 +1,49 @@
+package ru.yandex.practicum.filmorate.storage.dao;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.BadRequestException;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.storage.GenreDAO;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+@RequiredArgsConstructor
+public class GenreDAOImpl implements GenreDAO {
+    private final JdbcTemplate jdbcTemplate;
+
+    @Override
+    public Optional<Genre> findById(Long id) {
+        String sqlQuery = "SELECT *" +
+                "FROM genres " +
+                "WHERE GENRE_ID=?";
+        List<Genre> genreList = jdbcTemplate.query(sqlQuery, this::mapRowToGenre, id);
+        return genreList.stream().findFirst();
+    }
+
+    @Override
+    public List<Genre> findAll() {
+        String sqlQuery = "SELECT *" +
+                "FROM genres";
+        return jdbcTemplate.query(sqlQuery, this::mapRowToGenre);
+    }
+
+    @Override
+    public boolean isExistById(Long id) {
+        String sqlQuery = "SELECT EXISTS(SELECT 1 FROM genres WHERE GENRE_ID = ?)";
+        return jdbcTemplate.queryForObject(sqlQuery, Boolean.class, id);
+    }
+
+    private Genre mapRowToGenre(ResultSet resultSet, int rowNum) throws SQLException {
+        return Genre.builder()
+                .id(resultSet.getLong("GENRE_ID"))
+                .name(resultSet.getString("NAME"))
+                .build();
+    }
+}

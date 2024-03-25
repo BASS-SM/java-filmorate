@@ -19,16 +19,16 @@ public class UserController {
 
     @GetMapping("/{id}")
     public User findById(@PathVariable Long id) {
-        log.info("получен запрос получения пользователя по ID: {}", id);
+        log.info("получен запрос получения пользователя по ID (GET): {}", id);
         User user1 = userService.getUserByID(id);
-        log.info("получен пользователь: {}", user1);
+        log.info("получен пользователь (GET): {}", user1);
         return user1;
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<User> findAll() {
-        log.info("получен запрос получения списка всех пользователей.");
+        log.info("получен запрос получения списка всех пользователей (GET).");
         List<User> allFilms = userService.getAllUsers();
         return allFilms;
     }
@@ -37,21 +37,21 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public User create(@Valid @RequestBody User user) {
         User user1 = userService.createUser(user);
-        log.info("Пользователь создан {}", user1.getName());
+        log.info("Пользователь создан (POST) {}", user1.getName());
         return user1;
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
         User user1 = userService.updateUser(user);
-        log.info("Пользователь обновлен {}", user1.getName());
+        log.info("Пользователь обновлен (PUT) {}", user1.getName());
         return user1;
     }
 
     @PutMapping("/{id}/friends/{friendId}")
     public void addFriend(@PathVariable Long id, @PathVariable Long friendId) {
         userService.addFriend(id, friendId);
-        log.info("Пользователю обновлен друг {}", id);
+        log.info("Пользователю обновлен друг (PUT) {}", id);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")

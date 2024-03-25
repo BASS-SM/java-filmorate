@@ -1,0 +1,12 @@
+-- SELECT f.*, m.NAME,
+--        GROUP_CONCAT (G2.GENRE_ID) as genre_id,
+--        GROUP_CONCAT (G2.NAME) as name,
+--     COUNT(FU.USER_ID)
+-- FROM FILMS f
+--          LEFT JOIN FILM_GENRE FG on f.FILM_ID = FG.FILM_ID
+--          LEFT JOIN MPA M on M.MPA_ID = f.MPA_ID
+--          LEFT JOIN GENRES G2 on FG.GENRE_ID = G2.GENRE_ID
+--          LEFT JOIN FILMS_LIKES FU on F.FILM_ID = FU.FILM_ID
+-- GROUP BY  f.FILM_ID
+-- ORDER BY COUNT(USER_ID) DESC
+-- LIMIT ?;
