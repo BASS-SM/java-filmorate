@@ -83,7 +83,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film save(Film film) {
 
-        if (film.getMpa().getId()>5) {
+        if (film.getMpa().getId() > 5) {
             throw new NotFoundException("nest", HttpStatus.BAD_REQUEST);
         }
         if (film.getGenres() != null) {
@@ -98,7 +98,7 @@ public class FilmDbStorage implements FilmStorage {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         try {
             jdbcTemplate.update(connection -> {
-                PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"FILM_ID"});
+                PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[] {"FILM_ID"} );
                 stmt.setString(1, film.getName());
                 stmt.setString(2, film.getDescription());
                 stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
