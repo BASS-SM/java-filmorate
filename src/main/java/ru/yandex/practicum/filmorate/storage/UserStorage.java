@@ -24,4 +24,5 @@ public interface UserStorage {
 
     boolean isExistById(Long id);
 
+    boolean isExist(Integer id);
 }

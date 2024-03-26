@@ -14,7 +14,9 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -103,7 +105,13 @@ public class UserDbStorage implements UserStorage {
                 "FROM USERS " +
                 "LEFT JOIN friendship f on users.id = f.friend_id " +
                 "where f.user_id = ?";
-        return jdbcTemplate.query(sqlString, this::mapRowToUser, id);
+        //return jdbcTemplate.query(sqlString, this::mapRowToUser, id);
+
+        List<User> userList = jdbcTemplate.query(sqlString, this::mapRowToUser, id);
+        return userList.stream()
+                .sorted(Comparator.comparing(User::getId))
+                .collect(Collectors.toList());
+
     }
 
     @Override
@@ -134,5 +142,12 @@ public class UserDbStorage implements UserStorage {
     public boolean isExistById(Long id) {
         String sqlQuery = "SELECT EXISTS(SELECT 1 FROM USERS WHERE ID = ?)";
         return jdbcTemplate.queryForObject(sqlQuery, Boolean.class, id);
+    }
+
+    @Override
+    public boolean isExist(Integer id) {
+        String sqlQuery = "SELECT EXISTS (SELECT 1 FROM users WHERE id = ?)";
+
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sqlQuery, Boolean.class, id));
     }
 }

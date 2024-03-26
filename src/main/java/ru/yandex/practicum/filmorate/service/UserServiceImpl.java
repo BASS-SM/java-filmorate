@@ -66,6 +66,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAllFriends(Long id) {
+        if (!userStorage.isExistById(id)){
+            throw new NotFoundException("Не найден пользователь по ID: " + id, NOT_FOUND);
+        }
         return userStorage.getAllFriends(id);
     }
 

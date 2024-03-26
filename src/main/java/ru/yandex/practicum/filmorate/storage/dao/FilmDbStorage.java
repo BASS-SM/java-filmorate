@@ -82,28 +82,42 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film save(Film film) {
+
+        if (film.getMpa().getId()>5){
+            throw new NotFoundException("nest", HttpStatus.BAD_REQUEST);
+        }
+        if (film.getGenres() != null) {
+        for (Genre genre: film.getGenres()) {
+            if (genre.getId()>6){
+                throw new NotFoundException("nest", HttpStatus.BAD_REQUEST);
+            }
+        }
+        }
         String sqlQuery = "INSERT INTO FILMS(FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, MPA_ID) " +
                 "VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"FILM_ID"});
-            stmt.setString(1, film.getName());
-            // stmt.setDate(2, Date.valueOf(film.getReleaseDate()));
-
-            stmt.setString(2, film.getDescription());
-            stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
-            stmt.setInt(4, film.getDuration());
-            stmt.setInt(5, film.getMpa().getId().intValue());
-            return stmt;
-        }, keyHolder);
-        Long filmId = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        film.setId(filmId);
-        updateFilmGenresLinks(film);
-        return findById(filmId).orElse(null);
+        try {
+            jdbcTemplate.update(connection -> {
+                PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"FILM_ID"});
+                stmt.setString(1, film.getName());
+                stmt.setString(2, film.getDescription());
+                stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
+                stmt.setInt(4, film.getDuration());
+                stmt.setInt(5, film.getMpa().getId().intValue());
+                return stmt;
+            }, keyHolder);
+            Long filmId = Objects.requireNonNull(keyHolder.getKey()).longValue();
+            film.setId(filmId);
+            updateFilmGenresLinks(film);
+            //return findById(filmId).orElse(null);
+            //return findById(filmId).orElse(null);
+            return  film;
+        } catch (NotFoundException e){
+            return null;
+        }
     }
 
     @Override
-
     public Optional<Film> update(Film film) {
         String sqlQuery = "UPDATE FILMS SET " +
                 "FILM_NAME = ?,DESCRIPTION = ?, RELEASE_DATE = ?, " +
@@ -190,9 +204,12 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private void updateFilmGenresLinks(Film film) {
+
+
         if (film.getGenres() == null) {
             return;
         }
+
         deleteFilmGenresLinks(film.getId());
         String sqlQuery = "INSERT INTO FILM_GENRE(FILM_ID, GENRE_ID) " +
                 "VALUES (?, ?)";
