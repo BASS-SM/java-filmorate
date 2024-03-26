@@ -83,12 +83,12 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film save(Film film) {
 
-        if (film.getMpa().getId()>5){
+        if (film.getMpa().getId()>5) {
             throw new NotFoundException("nest", HttpStatus.BAD_REQUEST);
         }
         if (film.getGenres() != null) {
         for (Genre genre: film.getGenres()) {
-            if (genre.getId()>6){
+            if (genre.getId() > 6) {
                 throw new NotFoundException("nest", HttpStatus.BAD_REQUEST);
             }
         }
@@ -112,7 +112,7 @@ public class FilmDbStorage implements FilmStorage {
             //return findById(filmId).orElse(null);
             //return findById(filmId).orElse(null);
             return  film;
-        } catch (NotFoundException e){
+        } catch (NotFoundException e) {
             return null;
         }
     }
